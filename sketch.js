@@ -1,5 +1,5 @@
 var defaultPlotSketch = function(p) {
-
+  let cW, cY, cR, cG, cB;
   let bsPlot, bsPoints = [], bubblesort;
   let ssPlot, ssPoints = [], selectionsort;
   let isPlot, isPoints = [], insertionsort;
@@ -10,42 +10,43 @@ var defaultPlotSketch = function(p) {
 		let canvas = p.createCanvas(480, 370);
 		p.background(230);
     initialarr.randomize(30)
+    cW = p.color('#F4F1DE')
+    cY = p.color('#F2CC8F')
+    cR = p.color('#E07A5F')
+    cG = p.color('#81B29A')
+    cB = p.color('#3D405B')
+
 
 		bsPlot = new GPlot(p);
-		bsPlot.getXAxis().setTickLength(false);
-		bsPlot.getYAxis().setTickLength(false);
-		bsPlot.getXAxis().setDrawTickLabels(false);
-		bsPlot.getYAxis().setDrawTickLabels(false);
-		bsPlot.getYAxis().lineColor = [0,0,0,0]
-		bsPlot.getXAxis().lineColor = [0,0,0,0]
-		bsPlot.setMar(5, 5, 30, 5);
-		bsPlot.setDim(150, 150);
-		bsPlot.setPos(0, 0);
-		bsPlot.setTitleText("Bubble");
-
 		ssPlot = new GPlot(p);
-		ssPlot.getXAxis().setTickLength(false);
-		ssPlot.getYAxis().setTickLength(false);
-		ssPlot.getXAxis().setDrawTickLabels(false);
-		ssPlot.getYAxis().setDrawTickLabels(false);
-		ssPlot.getYAxis().lineColor = [0,0,0,0]
-		ssPlot.getXAxis().lineColor = [0,0,0,0]
-		ssPlot.setMar(5, 5, 30, 5);
-		ssPlot.setDim(150, 150);
-		ssPlot.setPos(160, 185);
-		ssPlot.setTitleText("Selection");
-
 		isPlot = new GPlot(p);
-		isPlot.getXAxis().setTickLength(false);
-		isPlot.getYAxis().setTickLength(false);
-		isPlot.getXAxis().setDrawTickLabels(false);
-		isPlot.getYAxis().setDrawTickLabels(false);
-		isPlot.getYAxis().lineColor = [0,0,0,0]
-		isPlot.getXAxis().lineColor = [0,0,0,0]
-		isPlot.setMar(5, 5, 30, 5);
-		isPlot.setDim(150, 150);
-		isPlot.setPos(320, 0);
-		isPlot.setTitleText("Insertion");
+
+    bsPlot.setTitleText("Bubble");
+    ssPlot.setTitleText("Selection");
+    isPlot.setTitleText("Insertion");
+
+    bsPlot.setPos(0, 0);
+    ssPlot.setPos(160, 185);
+    isPlot.setPos(320, 0);
+
+    [bsPlot, ssPlot, isPlot].forEach((item) => {
+  		item.getXAxis().setTickLength(false);
+  		item.getYAxis().setTickLength(false);
+  		item.getXAxis().setDrawTickLabels(false);
+  		item.getYAxis().setDrawTickLabels(false);
+  		item.getYAxis().lineColor = [0,0,0,0]
+  		item.getXAxis().lineColor = [0,0,0,0]
+      item.getMainLayer().setPointColor(cB)
+      item.getMainLayer().setLineColor(cB)
+      item.getMainLayer().setLineWidth(1.5)
+      item.setBgColor(cY)
+      item.setBoxBgColor(cW)
+      item.setBoxLineColor(cB)
+      item.setBoxLineWidth(2)
+  		item.setMar(5, 5, 30, 5);
+  		item.setDim(150, 150);
+  		item.getTitle().setFontColor(cB);
+    });
 
     let points = [];
     for (var i = 0; i < initialarr.length; i++) {
@@ -69,7 +70,7 @@ var defaultPlotSketch = function(p) {
 
     bsPoints = bubblesort.next().value || bsPoints;
     for (var i = 0; i < bsPoints.length; i++) {
-			points[i] = new GPoint(i, bsPoints[i]);
+      points[i] = new GPoint(i, bsPoints[i]);
 		}
     bsPlot.setPoints(points)
 		bsPlot.defaultDraw();
