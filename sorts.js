@@ -1,15 +1,21 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.sorts = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 module.exports = function*(arr) {
+  arr = arr.slice()
   let len = arr.length
   let swapped = true
+  let i;
   while (swapped) {
     swapped = false
-    for (let i = 1; i < len; i++) {
+    for (i = 1; i < len; i++) {
       if (arr[i - 1] > arr[i]) {
         arr.swap(i - 1, i)
         swapped = true
       }
-      yield arr
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: i-1
+      }
     }
     len--
   }
@@ -17,12 +23,19 @@ module.exports = function*(arr) {
 
 },{}],2:[function(require,module,exports){
 module.exports = function*(arr) {
+  arr = arr.slice()
   let i = 1
+  let j;
   let len = arr.length
   while (i < len) {
-    let j = i
+    j = i
     while (j >= 0 && arr[j - 1] > arr[j]) {
-      yield arr.swap(j, j - 1)
+      arr.swap(j, j - 1)
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: j
+      }
       j--
     }
     i++
@@ -31,16 +44,26 @@ module.exports = function*(arr) {
 
 },{}],3:[function(require,module,exports){
 module.exports = function*(arr) {
+  arr = arr.slice()
   let i, j
   let len = arr.length
   for (i = 0; i < len; i++) {
     let jmin = i
     for (j = i + 1; j < len; j++) {
       if (arr[j] < arr[jmin]) jmin = j
-      yield arr
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: j
+      }
     }
     if (jmin !== i) {
-      yield arr.swap(i, jmin)
+      arr.swap(i, jmin)
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: j
+      }
     }
   }
 }

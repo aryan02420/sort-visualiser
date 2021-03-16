@@ -3,93 +3,106 @@ var defaultPlotSketch = function(p) {
   let bsPlot, bsPoints = [], bubblesort;
   let ssPlot, ssPoints = [], selectionsort;
   let isPlot, isPoints = [], insertionsort;
-  let initialarr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+  let bubble = {}
+  let selection = {}
+  let insertion = {}
+  let initialarr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+  let startBtn, randomizeBtn;
 
 	p.setup = function() {
 
-		let canvas = p.createCanvas(480, 370);
+		let canvas = p.createCanvas(480, 400);
 		p.background(230);
-    initialarr.randomize(30)
-    cW = p.color('#F4F1DE')
-    cY = p.color('#F2CC8F')
-    cR = p.color('#E07A5F')
-    cG = p.color('#81B29A')
-    cB = p.color('#3D405B')
+    p.frameRate(5);
+
+    initialarr.randomize(50);
+
+    cW = p.color('#F4F1DE');
+    cY = p.color('#F2CC8F');
+    cR = p.color('#E07A5F');
+    cG = p.color('#81B29A');
+    cB = p.color('#3D405B');
 
 
-		bsPlot = new GPlot(p);
-		ssPlot = new GPlot(p);
-		isPlot = new GPlot(p);
+    // gui = p.createGui();
+    // startBtn = p.createButton("START", 0, 370, 150, 30)
 
-    bsPlot.setTitleText("Bubble");
-    ssPlot.setTitleText("Selection");
-    isPlot.setTitleText("Insertion");
+		bubble.plot = new GPlot(p);
+		selection.plot = new GPlot(p);
+		insertion.plot = new GPlot(p);
 
-    bsPlot.setPos(0, 0);
-    ssPlot.setPos(160, 185);
-    isPlot.setPos(320, 0);
+    bubble.plot.setTitleText("Bubble");
+    selection.plot.setTitleText("Selection");
+    insertion.plot.setTitleText("Insertion");
 
-    [bsPlot, ssPlot, isPlot].forEach((item) => {
-  		item.getXAxis().setTickLength(false);
-  		item.getYAxis().setTickLength(false);
-  		item.getXAxis().setDrawTickLabels(false);
-  		item.getYAxis().setDrawTickLabels(false);
-  		item.getYAxis().lineColor = [0,0,0,0]
-  		item.getXAxis().lineColor = [0,0,0,0]
-      item.getMainLayer().setPointColor(cB)
-      item.getMainLayer().setLineColor(cB)
-      item.getMainLayer().setLineWidth(1.5)
-      item.setBgColor(cY)
-      item.setBoxBgColor(cW)
-      item.setBoxLineColor(cB)
-      item.setBoxLineWidth(2)
-  		item.setMar(5, 5, 30, 5);
-  		item.setDim(150, 150);
-  		item.getTitle().setFontColor(cB);
-    });
+    bubble.plot.setPos(0, 0);
+    selection.plot.setPos(160, 185);
+    insertion.plot.setPos(320, 0);
 
     let points = [];
     for (var i = 0; i < initialarr.length; i++) {
 			points[i] = new GPoint(i, initialarr[i]);
 		}
-    bsPlot.setPoints(points)
-		bsPlot.defaultDraw();
-    ssPlot.setPoints(points)
-		ssPlot.defaultDraw();
-    isPlot.setPoints(points)
-		isPlot.defaultDraw();
 
-    bubblesort = sorts.Bubble(initialarr.slice())
-    selectionsort = sorts.Selection(initialarr.slice())
-    insertionsort = sorts.Insertion(initialarr.slice())
+    [bubble, selection, insertion].forEach((item) => {
+  		item.plot.getXAxis().setTickLength(false);
+  		item.plot.getYAxis().setTickLength(false);
+  		item.plot.getXAxis().setDrawTickLabels(false);
+  		item.plot.getYAxis().setDrawTickLabels(false);
+  		item.plot.getYAxis().lineColor = [0,0,0,0];
+  		item.plot.getXAxis().lineColor = [0,0,0,0];
+      item.plot.getMainLayer().setPointColor(cB);
+      item.plot.getMainLayer().setLineColor(cB);
+      item.plot.getMainLayer().setLineWidth(1.5);
+      item.plot.setBgColor(cY);
+      item.plot.setBoxBgColor(cW);
+      item.plot.setBoxLineColor(cB);
+      item.plot.setBoxLineWidth(2);
+  		item.plot.setMar(5, 5, 30, 5);
+  		item.plot.setDim(150, 150);
+  		item.plot.getTitle().setFontColor(cB);
+      item.points = [];
+      item.i = 0;
+      item.j = 0;
+      item.plot.setPoints(points);
+  		item.plot.defaultDraw();
+      item.plot.addLayer("i", [new GPoint(0,0)]);
+      item.plot.addLayer("j", [new GPoint(0,0)]);
+      item.plot.getLayer("i").setPointColor(cR);
+      item.plot.getLayer("j").setPointColor(cG);
+      item.plot.getLayer("i").setPointColor(cR);
+      item.plot.getLayer("j").setPointColor(cG);
+      item.plot.getLayer("i").setPointSize(5);
+      item.plot.getLayer("j").setPointSize(5);
+    });
+
+    bubble.sort = sorts.Bubble(initialarr.slice());
+    selection.sort = sorts.Selection(initialarr.slice());
+    insertion.sort = sorts.Insertion(initialarr.slice());
 
 	};
 
   p.draw = function() {
-    let points = []
 
-    bsPoints = bubblesort.next().value || bsPoints;
-    for (var i = 0; i < bsPoints.length; i++) {
-      points[i] = new GPoint(i, bsPoints[i]);
-		}
-    bsPlot.setPoints(points)
-		bsPlot.defaultDraw();
+    let points = [];
+    let next;
 
-    ssPoints = selectionsort.next().value || ssPoints;
-    for (var i = 0; i < ssPoints.length; i++) {
-			points[i] = new GPoint(i, ssPoints[i]);
-		}
-    ssPlot.setPoints(points)
-		ssPlot.defaultDraw();
+    [bubble, selection, insertion].forEach((item) => {
+        next = item.sort.next()
+        item.points = next.value?.array?.slice() || item.points;
+        item.i = next.value?.i || item.i;
+        item.j = next.value?.j || item.j;
+        for (var i = 0; i < item.points.length; i++) {
+          points[i] = new GPoint(i, item.points[i]);
+    		}
+        item.plot.setPoints(points);
+        item.plot.getLayer("i").setPoint(0, item.i, item.points[item.i])
+        item.plot.getLayer("j").setPoint(0, item.j, item.points[item.j])
+    		item.plot.defaultDraw();
+    });
 
-    isPoints = insertionsort.next().value || isPoints;
-    for (var i = 0; i < isPoints.length; i++) {
-			points[i] = new GPoint(i, isPoints[i]);
-		}
-    isPlot.setPoints(points)
-		isPlot.defaultDraw();
   }
 
 };
 
-new p5(defaultPlotSketch)
+new p5(defaultPlotSketch);
