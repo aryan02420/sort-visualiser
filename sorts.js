@@ -34,7 +34,7 @@ module.exports = function*(arr) {
       yield {
         array: arr.slice(),
         i: i,
-        j: j
+        j: j-1
       }
       j--
     }
@@ -62,7 +62,7 @@ module.exports = function*(arr) {
       yield {
         array: arr.slice(),
         i: i,
-        j: j
+        j: jmin
       }
     }
   }
