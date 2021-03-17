@@ -249,29 +249,29 @@ class Gui {
     this.objects.forEach((obj) => {
       switch (obj._type) {
         case "button":
-          obj._style = Object.create(this._style.button);
+          obj._style = Object.assign(obj._style, this._style.button);
           break;
         case "toggle":
-          obj._style = Object.create(this._style.toggle);
+          obj._style = Object.assign(obj._style, this._style.toggle);
           break;
         case "checkbox":
-          obj._style = Object.create(this._style.checkbox);
+          obj._style = Object.assign(obj._style, this._style.checkbox);
           break;
         case "slider":
-          obj._style = Object.create(this._style.slider);
+          obj._style = Object.assign(obj._style, this._style.slider);
           break;
         case "crossfader":
-          obj._style = Object.create(this._style.slider);
+          obj._style = Object.assign(obj._style, this._style.slider);
           obj._style.strokeCenter = Object.create(this._style.crossfader.strokeCenter);
           obj._style.strokeCenterHover = Object.create(this._style.crossfader.strokeCenterHover);
           obj._style.strokeCenterActive = Object.create(this._style.crossfader.strokeCenterActive);
           break;
         case "slider2d":
-          obj._style = Object.create(this._style.slider);
+          obj._style = Object.assign(obj._style, this._style.slider);
           obj._style.handleRadius = this._style.slider2d.handleRadius;
           break;
         case "joystick":
-          obj._style = Object.create(this._style.slider);
+          obj._style = Object.assign(obj._style, this._style.slider);
           obj._style.handleRadius = this._style.slider2d.handleRadius;
           break;
         default:
@@ -288,36 +288,9 @@ class Gui {
   // Load style from a JSON file.
   loadStyleJSON(filename) {
     console.warn("loadStyleJSON(): This function is not yet implemented.");
-
     if (typeof filename === "string") {
       this.sketch.loadJSON(filename, (style)=> {
-        let target = {};
-
-        // Cycle through all top level style properties
-        Object.keys(style).forEach((i) => {
-          if (typeof style[i] !== "object") {
-            // If the property is not an object, copy it to target
-            target[i] = style[i];
-          }
-          else {
-            // If the property is an object, create an empty object on the target...
-            target[i] = {};
-
-            // Loop through all child items...
-            Object.keys(style[i]).forEach((j) => {
-              // if (typeof style[i][j] === "string" && style[i] != "font") {
-                // Copy any non-font string objects as p5.Color objects
-                // target[i][j] = this.sketch.color(...style[i][j]);
-              // }
-              // else {
-                // Copy any other properties directly
-                target[i][j] = style[i][j];
-              // }
-            });
-          }
-        });
-
-        this._style = Object.create(target);
+        this._style.newStyle(style);
         this.updateStyle();
       });
     }
@@ -1894,6 +1867,10 @@ class GuiStyle {
     this.joystick = {
       handleRadius:       16
     }
+  }
+
+  newStyle(style) {
+    Object.assign(this, style)
   }
 
   // Default

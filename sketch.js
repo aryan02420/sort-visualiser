@@ -5,27 +5,30 @@ var defaultPlotSketch = function(p) {
   let bubble = {}
   let selection = {}
   let insertion = {}
-  let initialarr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-  let gui, startBtn, randomizeBtn, speedSlid;
+  let initialarr = [];
+  let gui, startBtn, randomizeBtn, speedSlid, stepBtn;
   let sortSpeed = 5;
   let frame = 0;
 
 
   let initialize = function() {
 
-    initialarr.randomize(50);
-
+    initialarr.randomize();
     let points = [];
     for (let i = 0; i < initialarr.length; i++) {
 			points[i] = new GPoint(i, initialarr[i]);
 		}
+    
 
     [bubble, selection, insertion].forEach((item) => {
       item.plot.setPoints(points);
       item.plot.getLayer("markers").setPoint(0, 0, 0)
-      item.plot.getLayer("markers").setPoint(1, 20, 20)
+      item.plot.getLayer("markers").setPoint(1, 0, 0)
       item.plot.getLayer("markers").setPointColors([[0,0], [0,0]]);
   		item.plot.defaultDraw();
+      item.points = initialarr.slice();
+      item.i = 0;
+      item.j = 0;
     });
 
     bubble.sort = sorts.Bubble(initialarr.slice());
@@ -69,6 +72,10 @@ var defaultPlotSketch = function(p) {
 		p.background(230);
     p.frameRate(30);
 
+    for (let i = 0; i < 20; i++){
+      initialarr.push(i)
+    }
+
     cW = p.color('#F4F1DE');
     cY = p.color('#F2CC8F');
     cR = p.color('#E07A5F');
@@ -76,17 +83,15 @@ var defaultPlotSketch = function(p) {
     cB = p.color('#3D405B');
 
     gui = p.createGui(canvas);
-    gui.loadStyle("Seafoam");
-    // gui.loadStyleJSON("stylepreset.json");
-    // gui.loadStyle("Seafoam");
-    gui.updateStyle();
-    startBtn = p.createToggle("START", 340, 380, 120, 30);
+    gui.loadStyleJSON("./stylepreset.json");
+    startBtn = p.createToggle("START", 340, 380, 70, 30);
     startBtn.labelOn  = "STOP";
     startBtn.labelOff = "START";
     randomizeBtn = p.createButton("Randomize", 20, 380, 120, 30);
     speedSlid = p.createSlider("speed", 180, 380, 120, 30, 5)
     speedSlid.min = 20;
     speedSlid.max = 0;
+    stepBtn = p.createButton(">", 420, 380, 40, 30);
 
 		bubble.plot = new GPlot(p);
 		selection.plot = new GPlot(p);
@@ -97,7 +102,7 @@ var defaultPlotSketch = function(p) {
     insertion.plot.setTitleText("Insertion");
 
     bubble.plot.setPos(0, 0);
-    selection.plot.setPos(160, 185);
+    selection.plot.setPos(160, 0);
     insertion.plot.setPos(320, 0);
 
     [bubble, selection, insertion].forEach((item) => {
@@ -144,6 +149,13 @@ var defaultPlotSketch = function(p) {
       [bubble, selection, insertion].forEach((item) => {
         item.plot.getLayer("markers").setPointColors([cR, cG]);
       });
+    }
+    if (stepBtn.isReleased) {
+      startBtn.val = false;
+      [bubble, selection, insertion].forEach((item) => {
+        item.plot.getLayer("markers").setPointColors([cR, cG]);
+      });
+      step();
     }
     if (speedSlid.isReleased) sortSpeed = p.int(speedSlid.val);
     if (!startBtn.val) return;
