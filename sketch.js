@@ -7,6 +7,8 @@ var defaultPlotSketch = function(p) {
   let insertion = {}
   let initialarr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
   let gui, startBtn, randomizeBtn, speedSlid;
+  let sortSpeed = 5;
+  let frame = 0;
 
 
   let initialize = function() {
@@ -35,11 +37,37 @@ var defaultPlotSketch = function(p) {
   }
 
 
+  let step = function() {
+    
+    let points = [];
+    let next;
+    let finished = [];
+
+    [bubble, selection, insertion].forEach((item, i) => {
+        next = item.sort.next()
+        item.points = next.value?.array?.slice() || item.points;
+        item.i = next.value?.i || item.i;
+        item.j = next.value?.j || item.j;
+        for (var i = 0; i < item.points.length; i++) {
+          points[i] = new GPoint(i, item.points[i]);
+    		}
+        item.plot.setPoints(points);
+        item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i])
+        item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
+    		item.plot.defaultDraw();
+        finished.push(next.done)
+    });
+
+    if (finished.every(x => x)) startBtn.val = false;
+
+  }
+
+
 	p.setup = function() {
 
 		let canvas = p.createCanvas(480, 420);
 		p.background(230);
-    p.frameRate(15);
+    p.frameRate(30);
 
     cW = p.color('#F4F1DE');
     cY = p.color('#F2CC8F');
@@ -57,10 +85,8 @@ var defaultPlotSketch = function(p) {
     startBtn.labelOff = "START";
     randomizeBtn = p.createButton("Randomize", 20, 380, 120, 30);
     speedSlid = p.createSlider("speed", 180, 380, 120, 30, 5)
-    speedSlid.min = 1;
-    speedSlid.max = 15;
-
-    p.frameRate(p.int(speedSlid.val));
+    speedSlid.min = 20;
+    speedSlid.max = 0;
 
 		bubble.plot = new GPlot(p);
 		selection.plot = new GPlot(p);
@@ -119,29 +145,12 @@ var defaultPlotSketch = function(p) {
         item.plot.getLayer("markers").setPointColors([cR, cG]);
       });
     }
-    if (speedSlid.isReleased) p.frameRate(p.int(speedSlid.val));
+    if (speedSlid.isReleased) sortSpeed = p.int(speedSlid.val);
     if (!startBtn.val) return;
 
-    let points = [];
-    let next;
-    let finished = [];
-
-    [bubble, selection, insertion].forEach((item, i) => {
-        next = item.sort.next()
-        item.points = next.value?.array?.slice() || item.points;
-        item.i = next.value?.i || item.i;
-        item.j = next.value?.j || item.j;
-        for (var i = 0; i < item.points.length; i++) {
-          points[i] = new GPoint(i, item.points[i]);
-    		}
-        item.plot.setPoints(points);
-        item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i])
-        item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
-    		item.plot.defaultDraw();
-        finished.push(next.done)
-    });
-
-    if (finished.every(x => x)) startBtn.val = false;
+    if (frame === 0) step();
+    frame++;
+    if (frame>sortSpeed) frame = 0;
 
   }
 
