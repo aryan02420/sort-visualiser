@@ -285,11 +285,11 @@ class Gui {
   //    - What is the best way to deep copy elements?
 
   // Load style from a JSON file.
-  /*loadStyleJSON(filename) {
-     console.warn("loadStyleJSON(): This function is not yet implemented.");
+  loadStyleJSON(filename) {
+    console.warn("loadStyleJSON(): This function is not yet implemented.");
 
     if (typeof filename === "string") {
-      loadJSON(filename, (style)=> {
+      this.sketch.loadJSON(filename, (style)=> {
         let target = {};
 
         // Cycle through all top level style properties
@@ -304,14 +304,14 @@ class Gui {
 
             // Loop through all child items...
             Object.keys(style[i]).forEach((j) => {
-              if (typeof style[i][j] === "string" && style[i] != "font") {
+              // if (typeof style[i][j] === "string" && style[i] != "font") {
                 // Copy any non-font string objects as p5.Color objects
-                target[i][j] = color(style[i][j]);
-              }
-              else {
+                // target[i][j] = this.sketch.color(...style[i][j]);
+              // }
+              // else {
                 // Copy any other properties directly
                 target[i][j] = style[i][j];
-              }
+              // }
             });
           }
         });
@@ -363,7 +363,7 @@ class Gui {
     else {
       console.error("saveStyleJSON(): Please input a string as a filename.");
     }
-  }*/
+  }
 
   //// GLOBAL STYLE SETTINGS
   // These functions set specific style properties for all objects

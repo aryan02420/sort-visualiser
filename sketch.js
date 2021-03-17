@@ -6,7 +6,7 @@ var defaultPlotSketch = function(p) {
   let selection = {}
   let insertion = {}
   let initialarr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-  let gui, startBtn, randomizeBtn;
+  let gui, startBtn, randomizeBtn, speedSlid;
 
 
   let initialize = function() {
@@ -20,8 +20,9 @@ var defaultPlotSketch = function(p) {
 
     [bubble, selection, insertion].forEach((item) => {
       item.plot.setPoints(points);
-      item.plot.getLayer("i").setPoint(0, 0, 0)
-      item.plot.getLayer("j").setPoint(0, 0, 0)
+      item.plot.getLayer("markers").setPoint(0, 0, 0)
+      item.plot.getLayer("markers").setPoint(1, 20, 20)
+      item.plot.getLayer("markers").setPointColors([[0,0], [0,0]]);
   		item.plot.defaultDraw();
     });
 
@@ -48,10 +49,18 @@ var defaultPlotSketch = function(p) {
 
     gui = p.createGui(canvas);
     gui.loadStyle("Seafoam");
+    // gui.loadStyleJSON("stylepreset.json");
+    // gui.loadStyle("Seafoam");
+    gui.updateStyle();
     startBtn = p.createToggle("START", 340, 380, 120, 30);
     startBtn.labelOn  = "STOP";
     startBtn.labelOff = "START";
     randomizeBtn = p.createButton("Randomize", 20, 380, 120, 30);
+    speedSlid = p.createSlider("speed", 180, 380, 120, 30, 5)
+    speedSlid.min = 1;
+    speedSlid.max = 15;
+
+    p.frameRate(p.int(speedSlid.val));
 
 		bubble.plot = new GPlot(p);
 		selection.plot = new GPlot(p);
@@ -70,8 +79,8 @@ var defaultPlotSketch = function(p) {
   		item.plot.getYAxis().setTickLength(false);
   		item.plot.getXAxis().setDrawTickLabels(false);
   		item.plot.getYAxis().setDrawTickLabels(false);
-  		item.plot.getYAxis().lineColor = [0,0,0,0];
-  		item.plot.getXAxis().lineColor = [0,0,0,0];
+  		item.plot.getYAxis().setLineColor([0,0,0,0]);
+  		item.plot.getXAxis().setLineColor([0,0,0,0]);
       item.plot.getMainLayer().setPointColor(cB);
       item.plot.getMainLayer().setLineColor(cB);
       item.plot.getMainLayer().setLineWidth(1.5);
@@ -82,18 +91,14 @@ var defaultPlotSketch = function(p) {
   		item.plot.setMar(5, 5, 30, 5);
   		item.plot.setDim(150, 150);
   		item.plot.getTitle().setFontColor(cB);
+  		item.plot.getTitle().setOffset(7);
       item.points = [];
       item.i = 0;
       item.j = 0;
   		item.plot.defaultDraw();
-      item.plot.addLayer("i", [new GPoint(0,0)]);
-      item.plot.addLayer("j", [new GPoint(0,0)]);
-      item.plot.getLayer("i").setPointColor(cR);
-      item.plot.getLayer("j").setPointColor(cG);
-      item.plot.getLayer("i").setPointColor(cR);
-      item.plot.getLayer("j").setPointColor(cG);
-      item.plot.getLayer("i").setPointSize(5);
-      item.plot.getLayer("j").setPointSize(5);
+      item.plot.addLayer("markers", [new GPoint(0,0), new GPoint(20,20)]);
+      item.plot.getLayer("markers").setPointSizes([5, 5]);
+      item.plot.getLayer("markers").setLineColor([0, 0]);
     });
 
     initialize();
@@ -109,6 +114,12 @@ var defaultPlotSketch = function(p) {
       startBtn.val = false;
       initialize();
     }
+    if (startBtn.val) {
+      [bubble, selection, insertion].forEach((item) => {
+        item.plot.getLayer("markers").setPointColors([cR, cG]);
+      });
+    }
+    if (speedSlid.isReleased) p.frameRate(p.int(speedSlid.val));
     if (!startBtn.val) return;
 
     let points = [];
@@ -124,8 +135,8 @@ var defaultPlotSketch = function(p) {
           points[i] = new GPoint(i, item.points[i]);
     		}
         item.plot.setPoints(points);
-        item.plot.getLayer("i").setPoint(0, item.i, item.points[item.i])
-        item.plot.getLayer("j").setPoint(0, item.j, item.points[item.j])
+        item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i])
+        item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
     		item.plot.defaultDraw();
         finished.push(next.done)
     });
