@@ -178,6 +178,7 @@ class Gui {
     p.x = (x - rect.left) / sx;
     p.y = (y - rect.top) / sy;
 
+    return {x,y}
     return p;
   }
 
@@ -454,8 +455,7 @@ class Gui {
   _onMouseDown(e) {
     // Get a hit result for the click and the current mouse position
     let result  = this._checkHit(this.sketch.mouseX, this.sketch.mouseY);
-    let m       = this._getCanvasPos(e.clientX, e.clientY);
-
+    let m       = this._getCanvasPos(this.sketch.mouseX, this.sketch.mouseY);
     // If there's a successful hit and the object is visible and enabled,
     // process the mouse press
     if (result.hit) {
@@ -468,7 +468,7 @@ class Gui {
   }
 
   _onMouseMove(e) {
-    let m = this._getCanvasPos(e.clientX, e.clientY);
+    let m = this._getCanvasPos(this.sketch.mouseX, this.sketch.mouseY);
 
     // If any mouse buttons are pressed
     if (e.buttons >= 1) {
@@ -528,7 +528,7 @@ class Gui {
 
     // Loop through all active touchpoints
     for (let i = 0; i < e.touches.length; i++) {
-      let t       = this._getCanvasPos(e.touches[i].clientX, e.touches[i].clientY);
+      let t       = this._getCanvasPos(this.sketch.mouseX, this.sketch.mouseY);
       let id      = e.touches[i].identifier;
       let result  = this._checkHit(t.x, t.y);
 
@@ -557,7 +557,7 @@ class Gui {
 
     // Loop through all active touch
     for (let i = 0; i < e.touches.length; i++) {
-      let t   = this._getCanvasPos(e.touches[i].clientX, e.touches[i].clientY);
+      let t   = this._getCanvasPos(this.sketch.mouseX, this.sketch.mouseY);
       let id  = e.touches[i].identifier;
 
       // If the touch is already locked on an object, process the input
