@@ -17,7 +17,7 @@ var defaultPlotSketch = function(p) {
   let initialize = function() {
 
     if (initialarr.length > arrsize) {
-      initialarr.slice(0, arrsize)
+      initialarr = []
     }
     let cursize = initialarr.length;
     for (let i = cursize; i < arrsize; i++){
@@ -75,6 +75,18 @@ var defaultPlotSketch = function(p) {
   		item.plot.defaultDraw();
       finished.push(next.done)
     });
+
+    p.push();
+    finished.forEach((item, i) => {
+      let pos = [bubble, selection, insertion][i].plot.getPos();
+      p.fill(cR)
+      p.stroke(cB)
+      p.strokeWeight(1.5)
+      p.ellipseMode(p.CENTER);
+      if (item) p.fill(cG);
+      p.ellipse(pos[0]+20, pos[1]+15, 10, 10);
+    });
+    p.pop();
 
     if (finished.every(x => x)) startBtn.val = false;
 
