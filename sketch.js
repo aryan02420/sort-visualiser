@@ -5,30 +5,41 @@ var defaultPlotSketch = function(p) {
   let bubble = {}
   let selection = {}
   let insertion = {}
-  let initialarr = [];
-  let gui, startBtn, randomizeBtn, speedSlid, stepBtn;
+  let initialarr = [], arrsize;
+  let gui;
+  let startBtn, randomizeBtn, stepBtn;
+  let speedSlid, skipSlid, sizeSlid;
   let sortSpeed = 5;
   let frame = 0;
+  let skipframe = 0;
 
 
   let initialize = function() {
 
+    if (initialarr.length > arrsize) {
+      initialarr.slice(0, arrsize)
+    }
+    let cursize = initialarr.length;
+    for (let i = cursize; i < arrsize; i++){
+      initialarr.push(i);
+    }
     initialarr.randomize();
     let points = [];
     for (let i = 0; i < initialarr.length; i++) {
 			points[i] = new GPoint(i, initialarr[i]);
 		}
-    
 
     [bubble, selection, insertion].forEach((item) => {
       item.plot.setPoints(points);
       item.plot.getLayer("markers").setPoint(0, 0, 0)
       item.plot.getLayer("markers").setPoint(1, 0, 0)
-      item.plot.getLayer("markers").setPointColors([[0,0], [0,0]]);
+      item.plot.getLayer("markers").setPoint(2, 0, 0)
+      item.plot.getLayer("markers").setPointColors([[0,0], [0,0], [0,0]]);
   		item.plot.defaultDraw();
       item.points = initialarr.slice();
       item.i = 0;
       item.j = 0;
+      item.k = 0;
     });
 
     bubble.sort = sorts.Bubble(initialarr.slice());
@@ -40,25 +51,29 @@ var defaultPlotSketch = function(p) {
   }
 
 
-  let step = function() {
-    
+  let step = function(skip = 0) {
+
     let points = [];
     let next;
     let finished = [];
 
-    [bubble, selection, insertion].forEach((item, i) => {
-        next = item.sort.next()
+    [bubble, selection, insertion].forEach((item) => {
+      for (let s = 0; s <= skip; s++) {
+        next = item.sort.next();
         item.points = next.value?.array?.slice() || item.points;
-        item.i = next.value?.i || item.i;
-        item.j = next.value?.j || item.j;
-        for (var i = 0; i < item.points.length; i++) {
-          points[i] = new GPoint(i, item.points[i]);
-    		}
-        item.plot.setPoints(points);
-        item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i])
-        item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
-    		item.plot.defaultDraw();
-        finished.push(next.done)
+        item.i = next.value?.i ?? item.i;
+        item.j = next.value?.j ?? item.j;
+        item.k = next.value?.k ?? item.k;
+      }
+      for (let i = 0; i < item.points.length; i++) {
+        points[i] = new GPoint(i, item.points[i]);
+  		}
+      item.plot.setPoints(points);
+      item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i])
+      item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
+      item.plot.getLayer("markers").setPoint(2, item.k, item.points[item.k])
+  		item.plot.defaultDraw();
+      finished.push(next.done)
     });
 
     if (finished.every(x => x)) startBtn.val = false;
@@ -68,13 +83,9 @@ var defaultPlotSketch = function(p) {
 
 	p.setup = function() {
 
-		let canvas = p.createCanvas(480, 420);
+		let canvas = p.createCanvas(480, 480);
 		p.background(230);
-    p.frameRate(30);
-
-    for (let i = 0; i < 20; i++){
-      initialarr.push(i)
-    }
+    p.frameRate(60);
 
     cW = p.color('#F4F1DE');
     cY = p.color('#F2CC8F');
@@ -84,14 +95,21 @@ var defaultPlotSketch = function(p) {
 
     gui = p.createGui(canvas);
     gui.loadStyleJSON("./stylepreset.json");
+
+    randomizeBtn = p.createButton("Randomize", 340, 420, 120, 30);
+    stepBtn = p.createButton(">", 420, 380, 40, 30);
     startBtn = p.createToggle("START", 340, 380, 70, 30);
     startBtn.labelOn  = "STOP";
     startBtn.labelOff = "START";
-    randomizeBtn = p.createButton("Randomize", 20, 380, 120, 30);
-    speedSlid = p.createSlider("speed", 180, 380, 120, 30, 5)
-    speedSlid.min = 20;
-    speedSlid.max = 0;
-    stepBtn = p.createButton(">", 420, 380, 40, 30);
+
+    speedSlid = p.createSlider("speed", 20, 380, 120, 20, 60, 0);
+    speedSlid.val = 10;
+    skipSlid = p.createSlider("skip", 20, 410, 120, 20, 0, 20);
+    skipSlid.val = 0;
+    skipframe = p.int(skipSlid.val)
+    sizeSlid = p.createSlider("size", 20, 440, 120, 20, 5, 150);
+    sizeSlid.val = 30;
+    arrsize = p.int(sizeSlid.val);
 
 		bubble.plot = new GPlot(p);
 		selection.plot = new GPlot(p);
@@ -124,11 +142,9 @@ var defaultPlotSketch = function(p) {
   		item.plot.getTitle().setFontColor(cB);
   		item.plot.getTitle().setOffset(7);
       item.points = [];
-      item.i = 0;
-      item.j = 0;
   		item.plot.defaultDraw();
-      item.plot.addLayer("markers", [new GPoint(0,0), new GPoint(20,20)]);
-      item.plot.getLayer("markers").setPointSizes([5, 5]);
+      item.plot.addLayer("markers", [new GPoint(0,0), new GPoint(20,20), new GPoint(20,20)]);
+      item.plot.getLayer("markers").setPointSizes([5, 5, 5]);
       item.plot.getLayer("markers").setLineColor([0, 0]);
     });
 
@@ -140,6 +156,12 @@ var defaultPlotSketch = function(p) {
   p.draw = function() {
 
     p.drawGui();
+    p.textSize(8)
+    p.fill(cB)
+    p.noStroke()
+    p.text("speed", 30, 378)
+    p.text("skip", 30, 408)
+    p.text("size", 30, 438)
 
     if (randomizeBtn.isReleased) {
       startBtn.val = false;
@@ -147,20 +169,26 @@ var defaultPlotSketch = function(p) {
     }
     if (startBtn.val) {
       [bubble, selection, insertion].forEach((item) => {
-        item.plot.getLayer("markers").setPointColors([cR, cG]);
+        item.plot.getLayer("markers").setPointColors([cR, cG, cY]);
       });
     }
     if (stepBtn.isReleased) {
       startBtn.val = false;
       [bubble, selection, insertion].forEach((item) => {
-        item.plot.getLayer("markers").setPointColors([cR, cG]);
+        item.plot.getLayer("markers").setPointColors([cR, cG, cY]);
       });
       step();
     }
     if (speedSlid.isReleased) sortSpeed = p.int(speedSlid.val);
+    if (skipSlid.isReleased) skipframe = p.int(skipSlid.val);
+    if (sizeSlid.isReleased) {
+      startBtn.val = false;
+      arrsize = p.int(sizeSlid.val);
+      initialize();
+    }
     if (!startBtn.val) return;
 
-    if (frame === 0) step();
+    if (frame === 0) step(skipframe);
     frame++;
     if (frame>sortSpeed) frame = 0;
 

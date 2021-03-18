@@ -10,14 +10,16 @@ module.exports = function*(arr) {
       yield {
         array: arr.slice(),
         i: i,
-        j: i-1
+        j: i-1,
+        k: len
       }
       if (arr[i - 1] > arr[i]) {
         arr.swap(i - 1, i);
         yield {
           array: arr.slice(),
           i: i,
-          j: i-1
+          j: i-1,
+          k: len
         }
         swapped = true;
       }
@@ -35,22 +37,25 @@ module.exports = function*(arr) {
     for (j = i; j >= 0; j--) {
 
       if (arr[j - 1] > arr[j]) {
-        if (j == i) yield {
+        yield {
           array: arr.slice(),
-          i: i,
-          j: j-1
+          i: j-1,
+          j: j,
+          k: i
         }
         arr.swap(j, j - 1);
         yield {
           array: arr.slice(),
-          i: i,
-          j: j-1
+          i: j-1,
+          j: j,
+          k: i
         }
       } else {
         yield {
           array: arr.slice(),
-          i: i,
-          j: j-1
+          i: j-1,
+          j: j,
+          k: i
         }
         break;
       }
@@ -72,20 +77,23 @@ module.exports = function*(arr) {
       yield {
         array: arr.slice(),
         i: i,
-        j: j
+        j: j,
+        k: jmin
       }
     }
     if (jmin !== i) {
       yield {
         array: arr.slice(),
         i: i,
-        j: jmin
+        j: j,
+        k: jmin
       }
       arr.swap(i, jmin);
       yield {
         array: arr.slice(),
         i: i,
-        j: jmin
+        j: j,
+        k: jmin
       }
     }
   }
