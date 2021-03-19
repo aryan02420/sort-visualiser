@@ -5,9 +5,10 @@ var defaultPlotSketch = function(p) {
   let bubble = {}
   let selection = {}
   let insertion = {}
+  let quick = {}
   let initialarr = [], arrsize;
   let gui;
-  let startBtn, randomizeBtn, stepBtn;
+  let startBtn, randomizeBtn, stepBtn, ascBtn, descBtn;
   let speedSlid, skipSlid, sizeSlid;
   let sortSpeed = 5;
   let frame = 0;
@@ -29,7 +30,7 @@ var defaultPlotSketch = function(p) {
 			points[i] = new GPoint(i, initialarr[i]);
 		}
 
-    [bubble, selection, insertion].forEach((item) => {
+    [bubble, selection, insertion, quick].forEach((item) => {
       item.plot.setPoints(points);
       item.plot.getLayer("markers").setPoint(0, 0, 0)
       item.plot.getLayer("markers").setPoint(1, 0, 0)
@@ -45,6 +46,7 @@ var defaultPlotSketch = function(p) {
     bubble.sort = sorts.Bubble(initialarr.slice());
     selection.sort = sorts.Selection(initialarr.slice());
     insertion.sort = sorts.Insertion(initialarr.slice());
+    quick.sort = sorts.Quick(initialarr.slice());
 
     p.drawGui();
 
@@ -57,7 +59,7 @@ var defaultPlotSketch = function(p) {
     let next;
     let finished = [];
 
-    [bubble, selection, insertion].forEach((item) => {
+    [bubble, selection, insertion, quick].forEach((item) => {
       for (let s = 0; s <= skip; s++) {
         next = item.sort.next();
         item.points = next.value?.array?.slice() || item.points;
@@ -73,12 +75,12 @@ var defaultPlotSketch = function(p) {
       item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
       item.plot.getLayer("markers").setPoint(2, item.k, item.points[item.k])
   		item.plot.defaultDraw();
-      finished.push(next.done)
+      finished.push(next.done);
     });
 
     p.push();
     finished.forEach((item, i) => {
-      let pos = [bubble, selection, insertion][i].plot.getPos();
+      let pos = [bubble, selection, insertion, quick][i].plot.getPos();
       p.fill(cR)
       p.stroke(cB)
       p.strokeWeight(1.5)
@@ -108,34 +110,39 @@ var defaultPlotSketch = function(p) {
     gui = p.createGui(canvas);
     gui.loadStyleJSON("./stylepreset.json");
 
-    randomizeBtn = p.createButton("Randomize", 340, 420, 120, 30);
-    stepBtn = p.createButton(">", 420, 380, 40, 30);
-    startBtn = p.createToggle("START", 340, 380, 70, 30);
+    randomizeBtn = p.createButton("Randomize", 340,415, 120,20);
+    stepBtn = p.createButton(">", 420,385, 40,20);
+    startBtn = p.createToggle("START", 340,385, 70,20);
     startBtn.labelOn  = "STOP";
     startBtn.labelOff = "START";
+    ascBtn = p.createButton("/", 340,445, 55,20)
+    descBtn = p.createButton("\\", 405,445, 55,20)
 
-    speedSlid = p.createSlider("speed", 20, 380, 120, 20, 60, 0);
+    speedSlid = p.createSlider("speed", 20,385, 120,20, 60,0);
     speedSlid.val = 10;
-    skipSlid = p.createSlider("skip", 20, 410, 120, 20, 0, 20);
+    skipSlid = p.createSlider("skip", 20,415, 120,20, 0,20);
     skipSlid.val = 0;
     skipframe = p.int(skipSlid.val)
-    sizeSlid = p.createSlider("size", 20, 440, 120, 20, 5, 150);
+    sizeSlid = p.createSlider("size", 20,445, 120,20, 5,150);
     sizeSlid.val = 30;
     arrsize = p.int(sizeSlid.val);
 
 		bubble.plot = new GPlot(p);
 		selection.plot = new GPlot(p);
 		insertion.plot = new GPlot(p);
+		quick.plot = new GPlot(p);
 
     bubble.plot.setTitleText("Bubble");
     selection.plot.setTitleText("Selection");
     insertion.plot.setTitleText("Insertion");
+    quick.plot.setTitleText("Quick");
 
     bubble.plot.setPos(0, 0);
     selection.plot.setPos(160, 0);
     insertion.plot.setPos(320, 0);
+    quick.plot.setPos(0, 185);
 
-    [bubble, selection, insertion].forEach((item) => {
+    [bubble, selection, insertion, quick].forEach((item) => {
   		item.plot.getXAxis().setTickLength(false);
   		item.plot.getYAxis().setTickLength(false);
   		item.plot.getXAxis().setDrawTickLabels(false);
@@ -171,22 +178,22 @@ var defaultPlotSketch = function(p) {
     p.textSize(8)
     p.fill(cB)
     p.noStroke()
-    p.text("speed", 30, 378)
-    p.text("skip", 30, 408)
-    p.text("size", 30, 438)
+    p.text("speed", 30, 383)
+    p.text("skip", 30, 413)
+    p.text("size", 30, 443)
 
     if (randomizeBtn.isReleased) {
       startBtn.val = false;
       initialize();
     }
     if (startBtn.val) {
-      [bubble, selection, insertion].forEach((item) => {
+      [bubble, selection, insertion, quick].forEach((item) => {
         item.plot.getLayer("markers").setPointColors([cR, cG, cY]);
       });
     }
     if (stepBtn.isReleased) {
       startBtn.val = false;
-      [bubble, selection, insertion].forEach((item) => {
+      [bubble, selection, insertion, quick].forEach((item) => {
         item.plot.getLayer("markers").setPointColors([cR, cG, cY]);
       });
       step();

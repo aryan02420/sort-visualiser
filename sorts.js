@@ -66,6 +66,37 @@ module.exports = function*(arr) {
 }
 
 },{}],3:[function(require,module,exports){
+const quicksort = function*(arr, lo, hi) {
+  lo = lo ?? 0;
+  hi = hi ?? arr.length;
+  if (lo < hi) {
+      let p;
+
+          let pivot = arr[hi];
+          let i = lo;
+          for (let j = lo; j < hi; j++) {
+            if (arr[j] < pivot) {
+              arr.swap(i, j);
+              yield {array: arr.slice(), i: i, j: hi, k: j};
+              i++;
+            }
+          }
+          arr.swap(i, hi);
+          yield {array: arr.slice(), i: i, j: hi, k: hi};
+          p = i;
+
+      yield* quicksort(arr, lo, p-1);
+      yield* quicksort(arr, p+1, hi);
+      }
+  yield {array: arr.slice(), i: lo, j: hi, k: hi};
+}
+
+module.exports = function*(arr) {
+  arr = arr.slice();
+  yield* quicksort(arr, 0, arr.length-1);
+};
+
+},{}],4:[function(require,module,exports){
 module.exports = function*(arr) {
   arr = arr.slice();
   let i, j;
@@ -98,18 +129,21 @@ module.exports = function*(arr) {
     }
   }
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 require('./utils/swap')
 require('./utils/randomize')
 const Bubble = require('./algos/bubble')
 const Selection = require('./algos/selection')
 const Insertion = require('./algos/insertion')
+const Quick = require('./algos/quick')
 module.exports = {
         Bubble,
         Selection,
-        Insertion
+        Insertion,
+        Quick
     }
-},{"./algos/bubble":1,"./algos/insertion":2,"./algos/selection":3,"./utils/randomize":5,"./utils/swap":6}],5:[function(require,module,exports){
+
+},{"./algos/bubble":1,"./algos/insertion":2,"./algos/quick":3,"./algos/selection":4,"./utils/randomize":6,"./utils/swap":7}],6:[function(require,module,exports){
 Array.prototype.randomize = function (numswaps) {
   len = this.length
   numswaps = numswaps ?? len
@@ -122,7 +156,7 @@ Array.prototype.randomize = function (numswaps) {
   return this
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 Array.prototype.swap = function (a, b) {
 	let temp = this[a]
 	this[a] = this[b]
@@ -130,5 +164,5 @@ Array.prototype.swap = function (a, b) {
 	return this
 }
 
-},{}]},{},[4])(4)
+},{}]},{},[5])(5)
 });
