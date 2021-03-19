@@ -15,16 +15,36 @@ var defaultPlotSketch = function(p) {
   let skipframe = 0;
 
 
+  const makeinitialarr = function(type) {
+    switch (type) {
+      case 'a': {
+        initialarr = [];
+        for (let i = 0; i < arrsize; i++){
+          initialarr.push(i);
+        }
+        break;
+      }
+      case 'd': {
+        initialarr = [];
+        for (let i = arrsize - 1; i >= 0; i--){
+          initialarr.push(i);
+        }
+        break;    
+      }
+      default: {
+        if (initialarr.length > arrsize) initialarr = [];
+        let cursize = initialarr.length;
+        for (let i = cursize; i < arrsize; i++){
+          initialarr.push(i);
+        }
+        initialarr.randomize();
+        break;
+      }
+    }
+  }
+
   let initialize = function() {
 
-    if (initialarr.length > arrsize) {
-      initialarr = []
-    }
-    let cursize = initialarr.length;
-    for (let i = cursize; i < arrsize; i++){
-      initialarr.push(i);
-    }
-    initialarr.randomize();
     let points = [];
     for (let i = 0; i < initialarr.length; i++) {
 			points[i] = new GPoint(i, initialarr[i]);
@@ -167,6 +187,7 @@ var defaultPlotSketch = function(p) {
       item.plot.getLayer("markers").setLineColor([0, 0]);
     });
 
+    makeinitialarr();
     initialize();
 
 	};
@@ -184,6 +205,17 @@ var defaultPlotSketch = function(p) {
 
     if (randomizeBtn.isReleased) {
       startBtn.val = false;
+      makeinitialarr();
+      initialize();
+    }
+    if (ascBtn.isReleased) {
+      startBtn.val = false;
+      makeinitialarr('a');
+      initialize();
+    }
+    if (descBtn.isReleased) {
+      startBtn.val = false;
+      makeinitialarr('d');
       initialize();
     }
     if (startBtn.val) {
