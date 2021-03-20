@@ -2,10 +2,11 @@ var defaultPlotSketch = function(p) {
 
 
   let cW, cY, cR, cG, cB;
-  let bubble = {}
-  let selection = {}
-  let insertion = {}
-  let quick = {}
+  let bubble = {};
+  let selection = {};
+  let insertion = {};
+  let quick = {};
+  let SORTS = [bubble, selection, insertion, quick];
   let initialarr = [], arrsize;
   let gui;
   let startBtn, randomizeBtn, stepBtn, ascBtn, descBtn;
@@ -50,7 +51,7 @@ var defaultPlotSketch = function(p) {
 			points[i] = new GPoint(i, initialarr[i]);
 		}
 
-    [bubble, selection, insertion, quick].forEach((item) => {
+    SORTS.forEach((item) => {
       item.plot.setPoints(points);
       item.plot.getLayer("markers").setPoint(0, 0, 0)
       item.plot.getLayer("markers").setPoint(1, 0, 0)
@@ -79,7 +80,7 @@ var defaultPlotSketch = function(p) {
     let next;
     let finished = [];
 
-    [bubble, selection, insertion, quick].forEach((item) => {
+    SORTS.forEach((item) => {
       for (let s = 0; s <= skip; s++) {
         next = item.sort.next();
         item.points = next.value?.array?.slice() || item.points;
@@ -162,7 +163,7 @@ var defaultPlotSketch = function(p) {
     insertion.plot.setPos(320, 0);
     quick.plot.setPos(0, 185);
 
-    [bubble, selection, insertion, quick].forEach((item) => {
+    SORTS.forEach((item) => {
   		item.plot.getXAxis().setTickLength(false);
   		item.plot.getYAxis().setTickLength(false);
   		item.plot.getXAxis().setDrawTickLabels(false);
@@ -235,6 +236,7 @@ var defaultPlotSketch = function(p) {
     if (sizeSlid.isReleased) {
       startBtn.val = false;
       arrsize = p.int(sizeSlid.val);
+      makeinitialarr();
       initialize();
     }
     if (!startBtn.val) return;
