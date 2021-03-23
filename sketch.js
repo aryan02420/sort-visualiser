@@ -2,13 +2,21 @@ var defaultPlotSketch = function(p) {
 
 
   let cW, cY, cR, cG, cB;
-  let bubble = {};
-  let selection = {};
-  let insertion = {};
-  let quick = {};
-  let cocktail = {};
-  let comb = {};
+  let bubble = {name: "Bubble"};
+  let selection = {name: "Selection"};
+  let insertion = {name: "Insertion"};
+  let cocktail = {name: "Cocktail"};
+  let comb = {name: "Comb"};
+  let quick = {name: "Quick"};
   let SORTS = [bubble, selection, insertion, cocktail, comb, quick];
+  let positions = [
+    [0,0],
+    [160,0],
+    [320,0],
+    [0,185],
+    [160,185],
+    [320,185],
+  ]
   let initialarr = [], arrsize;
   let gui;
   let startBtn, randomizeBtn, stepBtn, ascBtn, descBtn;
@@ -65,14 +73,8 @@ var defaultPlotSketch = function(p) {
       item.j = 0;
       item.k = 0;
   		item.plot.defaultDraw();
+      item.sort = sorts[item.name](initialarr);
     });
-
-    bubble.sort = sorts.Bubble(initialarr.slice());
-    selection.sort = sorts.Selection(initialarr.slice());
-    insertion.sort = sorts.Insertion(initialarr.slice());
-    cocktail.sort = sorts.Cocktail(initialarr.slice());
-    comb.sort = sorts.Comb(initialarr.slice());
-    quick.sort = sorts.Quick(initialarr.slice());
 
   }
 
@@ -151,28 +153,11 @@ var defaultPlotSketch = function(p) {
     sizeSlid.val = 30;
     arrsize = p.int(sizeSlid.val);
 
-		bubble.plot = new GPlot(p);
-		selection.plot = new GPlot(p);
-		insertion.plot = new GPlot(p);
-		cocktail.plot = new GPlot(p);
-		comb.plot = new GPlot(p);
-		quick.plot = new GPlot(p);
 
-    bubble.plot.setTitleText("Bubble");
-    selection.plot.setTitleText("Selection");
-    insertion.plot.setTitleText("Insertion");
-    cocktail.plot.setTitleText("Cocktail");
-    comb.plot.setTitleText("Comb");
-    quick.plot.setTitleText("Quick");
-
-    bubble.plot.setPos(0, 0);
-    selection.plot.setPos(160, 0);
-    insertion.plot.setPos(320, 0);
-    cocktail.plot.setPos(0, 185);
-    comb.plot.setPos(160, 185);
-    quick.plot.setPos(320, 185);
-
-    SORTS.forEach((item) => {
+    SORTS.forEach((item, index) => {
+      item.plot = new GPlot(p)
+      item.plot.setTitleText(item.name);
+      item.plot.setPos(positions[index]);
   		item.plot.getXAxis().setTickLength(false);
   		item.plot.getYAxis().setTickLength(false);
   		item.plot.getXAxis().setDrawTickLabels(false);
