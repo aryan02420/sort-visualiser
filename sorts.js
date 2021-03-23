@@ -30,6 +30,92 @@ module.exports = function*(arr) {
 },{}],2:[function(require,module,exports){
 module.exports = function*(arr) {
   arr = arr.slice();
+  let len = arr.length;
+  let startindex = 0;
+  let endindex = len - 1;
+  let i;
+  while (startindex < endindex) {
+    newstartindex = endindex;
+    newendindex = startindex;
+    for (i = startindex; i <= endindex; i++) {
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: i+1,
+        k: endindex
+      }
+      if (arr[i] > arr[i+1]) {
+        arr.swap(i, i+1);
+        newendindex = i;
+        yield {
+          array: arr.slice(),
+          i: i,
+          j: i+1,
+          k: endindex
+        }
+      }
+    }
+    endindex = newendindex - 1;
+    for (i = endindex; i >= startindex; i--) {
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: i+1,
+        k: endindex
+      }
+      if (arr[i] > arr[i+1]) {
+        arr.swap(i, i+1);
+        newstartindex = i;
+        yield {
+          array: arr.slice(),
+          i: i,
+          j: i+1,
+          k: endindex
+        }
+      }
+    }
+    startindex = newstartindex + 1
+  }
+}
+
+},{}],3:[function(require,module,exports){
+module.exports = function*(arr) {
+  arr = arr.slice();
+  let len = arr.length;
+  let sorted = false;
+  let shrink = 1.3;
+  let gap = len;
+  while (!sorted) {
+    gap = Math.floor(gap/shrink);
+    if (gap <= 1) {
+      sorted = true;
+      gap = 1;
+    }
+    for (i = 0; i < len-gap; i++) {
+      let j = i + gap;
+      yield {
+        array: arr.slice(),
+        i: i,
+        j: j,
+        k: len-gap
+      }
+      if (arr[i] > arr[j]) {
+        arr.swap(i, j);
+        yield {
+          array: arr.slice(),
+          i: i,
+          j: j,
+          k: len-gap
+        }
+        sorted = false;
+      }
+    }
+  }
+}
+
+},{}],4:[function(require,module,exports){
+module.exports = function*(arr) {
+  arr = arr.slice();
   let i, j;
   let len = arr.length;
   for (i = 1; i < len; i++) {
@@ -65,7 +151,7 @@ module.exports = function*(arr) {
   }
 }
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 const quicksort = function*(arr, lo, hi) {
   lo = lo ?? 0;
   hi = hi ?? arr.length;
@@ -98,7 +184,7 @@ module.exports = function*(arr) {
   yield* quicksort(arr, 0, arr.length-1);
 };
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function*(arr) {
   arr = arr.slice();
   let i, j;
@@ -131,24 +217,28 @@ module.exports = function*(arr) {
     }
   }
 }
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 require('./utils/swap')
 require('./utils/randomize')
 const Bubble = require('./algos/bubble')
 const Selection = require('./algos/selection')
 const Insertion = require('./algos/insertion')
 const Quick = require('./algos/quick')
+const Cocktail = require('./algos/cocktail')
+const Comb = require('./algos/comb')
 module.exports = {
         Bubble,
         Selection,
         Insertion,
-        Quick
+        Quick,
+        Cocktail,
+        Comb
     }
 
-},{"./algos/bubble":1,"./algos/insertion":2,"./algos/quick":3,"./algos/selection":4,"./utils/randomize":6,"./utils/swap":7}],6:[function(require,module,exports){
+},{"./algos/bubble":1,"./algos/cocktail":2,"./algos/comb":3,"./algos/insertion":4,"./algos/quick":5,"./algos/selection":6,"./utils/randomize":8,"./utils/swap":9}],8:[function(require,module,exports){
 Array.prototype.randomize = function (numswaps) {
   len = this.length
-  numswaps = numswaps ?? len
+  numswaps = numswaps ?? len*3
   while (numswaps > 0) {
     let a = Math.floor(Math.random() * len)
     let b = Math.floor(Math.random() * len)
@@ -158,7 +248,7 @@ Array.prototype.randomize = function (numswaps) {
   return this
 }
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 Array.prototype.swap = function (a, b) {
 	let temp = this[a]
 	this[a] = this[b]
@@ -166,5 +256,5 @@ Array.prototype.swap = function (a, b) {
 	return this
 }
 
-},{}]},{},[5])(5)
+},{}]},{},[7])(7)
 });

@@ -6,7 +6,9 @@ var defaultPlotSketch = function(p) {
   let selection = {};
   let insertion = {};
   let quick = {};
-  let SORTS = [bubble, selection, insertion, quick];
+  let cocktail = {};
+  let comb = {};
+  let SORTS = [bubble, selection, insertion, cocktail, comb, quick];
   let initialarr = [], arrsize;
   let gui;
   let startBtn, randomizeBtn, stepBtn, ascBtn, descBtn;
@@ -53,23 +55,24 @@ var defaultPlotSketch = function(p) {
 
     SORTS.forEach((item) => {
       item.plot.setPoints(points);
-      item.plot.getLayer("markers").setPoint(0, 0, 0)
-      item.plot.getLayer("markers").setPoint(1, 0, 0)
-      item.plot.getLayer("markers").setPoint(2, 0, 0)
-      item.plot.getLayer("markers").setPointColors([[0,0], [0,0], [0,0]]);
-  		item.plot.defaultDraw();
+      item.plot.getLayer("markers").setPoint(0, 0, 0);
+      item.plot.getLayer("markers").setPoint(1, 0, 0);
+      item.plot.getLayer("markers").setPointColors([[0,0], [0,0]]);
+      item.plot.getLayer("markers2").setPoint(0, 0, 0);
+      item.plot.getLayer("markers2").setPointColor([0,0]);
       item.points = initialarr.slice();
       item.i = 0;
       item.j = 0;
       item.k = 0;
+  		item.plot.defaultDraw();
     });
 
     bubble.sort = sorts.Bubble(initialarr.slice());
     selection.sort = sorts.Selection(initialarr.slice());
     insertion.sort = sorts.Insertion(initialarr.slice());
+    cocktail.sort = sorts.Cocktail(initialarr.slice());
+    comb.sort = sorts.Comb(initialarr.slice());
     quick.sort = sorts.Quick(initialarr.slice());
-
-    p.drawGui();
 
   }
 
@@ -92,16 +95,16 @@ var defaultPlotSketch = function(p) {
         points[i] = new GPoint(i, item.points[i]);
   		}
       item.plot.setPoints(points);
-      item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i])
-      item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j])
-      item.plot.getLayer("markers").setPoint(2, item.k, item.points[item.k])
+      item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i]);
+      item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j]);
+      item.plot.getLayer("markers2").setPoint(0, item.k, item.points[item.k]);
   		item.plot.defaultDraw();
       finished.push(next.done);
     });
 
     p.push();
     finished.forEach((item, i) => {
-      let pos = [bubble, selection, insertion, quick][i].plot.getPos();
+      let pos = SORTS[i].plot.getPos();
       p.fill(cR)
       p.stroke(cB)
       p.strokeWeight(1.5)
@@ -151,17 +154,23 @@ var defaultPlotSketch = function(p) {
 		bubble.plot = new GPlot(p);
 		selection.plot = new GPlot(p);
 		insertion.plot = new GPlot(p);
+		cocktail.plot = new GPlot(p);
+		comb.plot = new GPlot(p);
 		quick.plot = new GPlot(p);
 
     bubble.plot.setTitleText("Bubble");
     selection.plot.setTitleText("Selection");
     insertion.plot.setTitleText("Insertion");
+    cocktail.plot.setTitleText("Cocktail");
+    comb.plot.setTitleText("Comb");
     quick.plot.setTitleText("Quick");
 
     bubble.plot.setPos(0, 0);
     selection.plot.setPos(160, 0);
     insertion.plot.setPos(320, 0);
-    quick.plot.setPos(0, 185);
+    cocktail.plot.setPos(0, 185);
+    comb.plot.setPos(160, 185);
+    quick.plot.setPos(320, 185);
 
     SORTS.forEach((item) => {
   		item.plot.getXAxis().setTickLength(false);
@@ -182,10 +191,13 @@ var defaultPlotSketch = function(p) {
   		item.plot.getTitle().setFontColor(cB);
   		item.plot.getTitle().setOffset(7);
       item.points = [];
-  		item.plot.defaultDraw();
-      item.plot.addLayer("markers", [new GPoint(0,0), new GPoint(20,20), new GPoint(20,20)]);
-      item.plot.getLayer("markers").setPointSizes([5, 5, 5]);
+      item.plot.addLayer("markers", [new GPoint(0,0), new GPoint(0,0)]);
+      item.plot.getLayer("markers").setPointSize(5);
       item.plot.getLayer("markers").setLineColor([0, 0]);
+      item.plot.addLayer("markers2", [new GPoint(0,0)]);
+      item.plot.getLayer("markers2").setPointSize(3);
+      item.plot.getLayer("markers2").setLineColor([0, 0]);
+  		item.plot.defaultDraw();
     });
 
     makeinitialarr();
@@ -220,14 +232,16 @@ var defaultPlotSketch = function(p) {
       initialize();
     }
     if (startBtn.val) {
-      [bubble, selection, insertion, quick].forEach((item) => {
-        item.plot.getLayer("markers").setPointColors([cR, cG, cY]);
+      SORTS.forEach((item) => {
+        item.plot.getLayer("markers").setPointColors([cR, cG]);
+        item.plot.getLayer("markers2").setPointColor(cY);
       });
     }
     if (stepBtn.isReleased) {
       startBtn.val = false;
-      [bubble, selection, insertion, quick].forEach((item) => {
-        item.plot.getLayer("markers").setPointColors([cR, cG, cY]);
+      SORTS.forEach((item) => {
+        item.plot.getLayer("markers").setPointColors([cR, cG]);
+        item.plot.getLayer("markers2").setPointColor(cY);
       });
       step();
     }
