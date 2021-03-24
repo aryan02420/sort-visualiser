@@ -1,4 +1,4 @@
-var defaultPlotSketch = function(p) {
+var defaultSketch = function(p) {
 
 
   let cW, cY, cR, cG, cB;
@@ -62,15 +62,17 @@ var defaultPlotSketch = function(p) {
 		}
 
     SORTS.forEach((item) => {
-      item.plot.setPoints(points);
-      item.plot.getLayer("markers").setPoint(0, 0, 0);
-      item.plot.getLayer("markers").setPoint(1, 0, 0);
-      item.plot.getLayer("markers").setPointColors([[0,0], [0,0]]);
-      item.plot.getLayer("markers2").setPointColor([0,0]);
       item.points = initialarr.slice();
       item.i = 0;
       item.j = 0;
-      item.k = 0;
+      item.k = [];
+      item.plot.setPoints(points);
+      item.plot.getLayer("markers")
+        .setPoint(0, 0, 0)
+        .setPoint(1, 0, 0)
+        .setPointColors([[0,0], [0,0]]);
+      item.plot.getLayer("markers2")
+        .setPointColor([0,0]);
   		item.plot.defaultDraw();
       item.sort = sorts[item.name](initialarr);
     });
@@ -96,9 +98,11 @@ var defaultPlotSketch = function(p) {
         points[i] = new GPoint(i, item.points[i]);
   		}
       item.plot.setPoints(points);
-      item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i]);
-      item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j]);
-      item.plot.getLayer("markers2").setPoints([]);
+      item.plot.getLayer("markers")
+        .setPoint(0, item.i, item.points[item.i])
+        .setPoint(1, item.j, item.points[item.j]);
+      item.plot.getLayer("markers2")
+        .setPoints([]);
       item.k.forEach((val, idx) => {
         item.plot.getLayer("markers2").addPoint(val, item.points[val]);
       });
@@ -157,33 +161,40 @@ var defaultPlotSketch = function(p) {
 
 
     SORTS.forEach((item, index) => {
-      item.plot = new GPlot(p)
-      item.plot.setTitleText(item.name);
-      item.plot.setPos(positions[index]);
-  		item.plot.getXAxis().setTickLength(false);
-  		item.plot.getYAxis().setTickLength(false);
-  		item.plot.getXAxis().setDrawTickLabels(false);
-  		item.plot.getYAxis().setDrawTickLabels(false);
-  		item.plot.getYAxis().setLineColor([0,0,0,0]);
-  		item.plot.getXAxis().setLineColor([0,0,0,0]);
-      item.plot.getMainLayer().setPointColor(cB);
-      item.plot.getMainLayer().setLineColor(cB);
-      item.plot.getMainLayer().setLineWidth(1.5);
-      item.plot.setBgColor(cY);
-      item.plot.setBoxBgColor(cW);
-      item.plot.setBoxLineColor(cB);
-      item.plot.setBoxLineWidth(2);
-  		item.plot.setMar(5, 5, 30, 5);
-  		item.plot.setDim(150, 150);
-  		item.plot.getTitle().setFontColor(cB);
-  		item.plot.getTitle().setOffset(7);
       item.points = [];
-      item.plot.addLayer("markers", [new GPoint(0,0), new GPoint(0,0)]);
-      item.plot.getLayer("markers").setPointSize(5);
-      item.plot.getLayer("markers").setLineColor([0, 0]);
-      item.plot.addLayer("markers2", [new GPoint(0,0)]);
-      item.plot.getLayer("markers2").setPointSize(3);
-      item.plot.getLayer("markers2").setLineColor([0, 0]);
+      item.plot = new GPlot(p)
+      item.plot
+        .setTitleText(item.name)
+        .setPos(positions[index])
+        .setBgColor(cY)
+        .setBoxBgColor(cW)
+        .setBoxLineColor(cB)
+        .setBoxLineWidth(2)
+        .setMar(5, 5, 30, 5)
+        .setDim(150, 150)
+        .addLayer("markers", [new GPoint(0,0), new GPoint(0,0)])
+        .addLayer("markers2", [new GPoint(0,0)]);
+      item.plot.getTitle()
+        .setFontColor(cB)
+        .setOffset(7);
+      item.plot.getXAxis()
+        .setTickLength(false)
+        .setDrawTickLabels(false)
+        .setLineColor([0,0,0,0]);
+      item.plot.getYAxis()
+        .setTickLength(false)
+        .setDrawTickLabels(false)
+        .setLineColor([0,0,0,0]);
+      item.plot.getMainLayer()
+        .setPointColor(cB)
+        .setLineColor(cB)
+        .setLineWidth(1.5);
+      item.plot.getLayer("markers")
+        .setPointSize(5)
+        .setLineColor([0, 0]);
+      item.plot.getLayer("markers2")
+        .setPointSize(3)
+        .setLineColor([0, 0]);
   		item.plot.defaultDraw();
     });
 
@@ -251,4 +262,4 @@ var defaultPlotSketch = function(p) {
 
 };
 
-new p5(defaultPlotSketch);
+new p5(defaultSketch);
