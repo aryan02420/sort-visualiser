@@ -66,7 +66,6 @@ var defaultPlotSketch = function(p) {
       item.plot.getLayer("markers").setPoint(0, 0, 0);
       item.plot.getLayer("markers").setPoint(1, 0, 0);
       item.plot.getLayer("markers").setPointColors([[0,0], [0,0]]);
-      item.plot.getLayer("markers2").setPoint(0, 0, 0);
       item.plot.getLayer("markers2").setPointColor([0,0]);
       item.points = initialarr.slice();
       item.i = 0;
@@ -91,7 +90,7 @@ var defaultPlotSketch = function(p) {
         item.points = next.value?.array?.slice() || item.points;
         item.i = next.value?.i ?? item.i;
         item.j = next.value?.j ?? item.j;
-        item.k = next.value?.k ?? item.k;
+        item.k = next.value?.k ?? [];
       }
       for (let i = 0; i < item.points.length; i++) {
         points[i] = new GPoint(i, item.points[i]);
@@ -99,7 +98,10 @@ var defaultPlotSketch = function(p) {
       item.plot.setPoints(points);
       item.plot.getLayer("markers").setPoint(0, item.i, item.points[item.i]);
       item.plot.getLayer("markers").setPoint(1, item.j, item.points[item.j]);
-      item.plot.getLayer("markers2").setPoint(0, item.k, item.points[item.k]);
+      item.plot.getLayer("markers2").setPoints([]);
+      item.k.forEach((val, idx) => {
+        item.plot.getLayer("markers2").addPoint(val, item.points[val]);
+      });
   		item.plot.defaultDraw();
       finished.push(next.done);
     });

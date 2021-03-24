@@ -11,7 +11,7 @@ module.exports = function*(arr) {
         array: arr.slice(),
         i: i,
         j: i-1,
-        k: len
+        k: [len]
       }
       if (arr[i - 1] > arr[i]) {
         arr.swap(i - 1, i);
@@ -19,7 +19,7 @@ module.exports = function*(arr) {
           array: arr.slice(),
           i: i,
           j: i-1,
-          k: len
+          k: [len]
         }
         swapped = true;
       }
@@ -27,6 +27,7 @@ module.exports = function*(arr) {
     len--;
   }
 }
+
 },{}],2:[function(require,module,exports){
 module.exports = function*(arr) {
   arr = arr.slice();
@@ -42,7 +43,7 @@ module.exports = function*(arr) {
         array: arr.slice(),
         i: i,
         j: i+1,
-        k: endindex
+        k: [startindex, endindex]
       }
       if (arr[i] > arr[i+1]) {
         arr.swap(i, i+1);
@@ -51,7 +52,7 @@ module.exports = function*(arr) {
           array: arr.slice(),
           i: i,
           j: i+1,
-          k: endindex
+          k: [startindex, endindex]
         }
       }
     }
@@ -61,7 +62,7 @@ module.exports = function*(arr) {
         array: arr.slice(),
         i: i,
         j: i+1,
-        k: endindex
+        k: [startindex, endindex]
       }
       if (arr[i] > arr[i+1]) {
         arr.swap(i, i+1);
@@ -70,7 +71,7 @@ module.exports = function*(arr) {
           array: arr.slice(),
           i: i,
           j: i+1,
-          k: endindex
+          k: [startindex, endindex]
         }
       }
     }
@@ -97,7 +98,7 @@ module.exports = function*(arr) {
         array: arr.slice(),
         i: i,
         j: j,
-        k: len-gap
+        k: [gap, len-gap]
       }
       if (arr[i] > arr[j]) {
         arr.swap(i, j);
@@ -105,7 +106,7 @@ module.exports = function*(arr) {
           array: arr.slice(),
           i: i,
           j: j,
-          k: len-gap
+          k: [gap, len-gap]
         }
         sorted = false;
       }
@@ -127,21 +128,21 @@ module.exports = function*(arr) {
           array: arr.slice(),
           i: j-1,
           j: j,
-          k: i
+          k: [i]
         }
         arr.swap(j, j - 1);
         yield {
           array: arr.slice(),
           i: j-1,
           j: j,
-          k: i
+          k: [i]
         }
       } else {
         yield {
           array: arr.slice(),
           i: j-1,
           j: j,
-          k: i
+          k: [i]
         }
         break;
       }
@@ -162,21 +163,21 @@ const quicksort = function*(arr, lo, hi) {
           let i = lo;
           for (let j = lo; j < hi; j++) {
             if (arr[j] < pivot) {
-              yield {array: arr.slice(), i: i, j: j, k: hi};
+              yield {array: arr.slice(), i: i, j: j, k: [hi]};
               arr.swap(i, j);
-              yield {array: arr.slice(), i: i, j: j, k: hi};
+              yield {array: arr.slice(), i: i, j: j, k: [hi]};
               i++;
             }
           }
-          yield {array: arr.slice(), i: i, j: hi, k: hi};
+          yield {array: arr.slice(), i: i, j: hi, k: [hi]};
           arr.swap(i, hi);
-          yield {array: arr.slice(), i: i, j: hi, k: hi};
+          yield {array: arr.slice(), i: i, j: hi, k: [hi]};
           p = i;
 
       yield* quicksort(arr, lo, p-1);
       yield* quicksort(arr, p+1, hi);
       }
-  yield {array: arr.slice(), i: lo, j: hi, k: hi};
+  yield {array: arr.slice(), i: lo, j: hi, k: [hi]};
 }
 
 module.exports = function*(arr) {
@@ -197,26 +198,27 @@ module.exports = function*(arr) {
         array: arr.slice(),
         i: i,
         j: j,
-        k: jmin
+        k: [jmin]
       }
     }
     if (jmin !== i) {
       yield {
         array: arr.slice(),
         i: i,
-        j: j,
-        k: jmin
+        j: jmin,
+        k: [jmin]
       }
       arr.swap(i, jmin);
       yield {
         array: arr.slice(),
         i: i,
-        j: j,
-        k: jmin
+        j: jmin,
+        k: [jmin]
       }
     }
   }
 }
+
 },{}],7:[function(require,module,exports){
 require('./utils/swap')
 require('./utils/randomize')
