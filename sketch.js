@@ -10,17 +10,14 @@ var defaultSketch = function(p) {
   let quick = {name: "Quick"};
   let SORTS = [bubble, selection, insertion, cocktail, comb, quick];
   let positions = [
-    [0,0],
-    [160,0],
-    [320,0],
-    [0,185],
-    [160,185],
-    [320,185],
-  ]
+    [0,0],  [160,0],  [320,0],
+    [0,185],[160,185],[320,185],
+  ];
   let initialarr = [], arrsize;
   let gui;
   let startBtn, randomizeBtn, stepBtn, ascBtn, descBtn;
   let speedSlid, skipSlid, sizeSlid;
+  let sizes = [5,7,10,12,15,18,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,250,300,250,300,400,500];
   let sortSpeed = 5;
   let frame = 0;
   let skipframe = 0;
@@ -40,7 +37,7 @@ var defaultSketch = function(p) {
         for (let i = arrsize - 1; i >= 0; i--){
           initialarr.push(i);
         }
-        break;    
+        break;
       }
       default: {
         if (initialarr.length > arrsize) initialarr = [];
@@ -72,8 +69,11 @@ var defaultSketch = function(p) {
         .setPoint(1, 0, 0)
         .setPointColors([[0,0], [0,0]]);
       item.plot.getLayer("markers2")
+        .setPoints([])
         .setPointColor([0,0]);
-  		item.plot.defaultDraw();
+  		item.plot
+        .updateLimits()
+        .defaultDraw();
       item.sort = sorts[item.name](initialarr);
     });
 
@@ -152,12 +152,12 @@ var defaultSketch = function(p) {
 
     speedSlid = p.createSlider("speed", 20,385, 120,20, 60,0);
     speedSlid.val = 10;
-    skipSlid = p.createSlider("skip", 20,415, 120,20, 0,20);
+    skipSlid = p.createSlider("skip", 20,415, 120,20, 0,50);
     skipSlid.val = 0;
     skipframe = p.int(skipSlid.val)
-    sizeSlid = p.createSlider("size", 20,445, 120,20, 5,150);
-    sizeSlid.val = 30;
-    arrsize = p.int(sizeSlid.val);
+    sizeSlid = p.createSlider("size", 20,445, 120,20, 0,sizes.length-1);
+    sizeSlid.val = 6;
+    arrsize = sizes[p.round(sizeSlid.val)];
 
 
     SORTS.forEach((item, index) => {
@@ -206,13 +206,16 @@ var defaultSketch = function(p) {
 
   p.draw = function() {
 
+    p.rectMode(p.CORNERS);
+    p.fill(230);
+    p.noStroke();
+    p.rect(0,370, 480,480);
     p.drawGui();
-    p.textSize(8)
-    p.fill(cB)
-    p.noStroke()
-    p.text("speed", 30, 383)
-    p.text("skip", 30, 413)
-    p.text("size", 30, 443)
+    p.textSize(8);
+    p.fill(cB);
+    p.text("speed "+sortSpeed, 30, 383);
+    p.text("skip "+skipframe, 30, 413);
+    p.text("size "+arrsize, 30, 443);
 
     if (randomizeBtn.isReleased) {
       startBtn.val = false;
@@ -247,15 +250,16 @@ var defaultSketch = function(p) {
     if (skipSlid.isReleased) skipframe = p.int(skipSlid.val);
     if (sizeSlid.isReleased) {
       startBtn.val = false;
-      arrsize = p.int(sizeSlid.val);
+      let newsizeindex = p.round(sizeSlid.val);
+      arrsize = sizes[newsizeindex];
+      sizeSlid.val = newsizeindex;
       makeinitialarr();
       initialize();
     }
     if (!startBtn.val) return;
 
     if (frame === 0) step(skipframe);
-    frame++;
-    if (frame>sortSpeed) frame = 0;
+    if (++frame>sortSpeed) frame = 0;
 
   }
 
