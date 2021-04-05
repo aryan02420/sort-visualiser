@@ -2,28 +2,29 @@ var defaultSketch = function(p) {
 
 
   let cW, cY, cR, cG, cB;
-  let bubble = {name: "Bubble"};
-  let selection = {name: "Selection"};
-  let insertion = {name: "Insertion"};
-  let cocktail = {name: "Cocktail"};
-  let comb = {name: "Comb"};
-  let quick = {name: "Quick"};
-  let SORTS = [bubble, selection, insertion, cocktail, comb, quick];
+  let bubble = {name: "Bubble", position:0};
+  let selection = {name: "Selection", position:1};
+  let insertion = {name: "Insertion", position:2};
+  let cocktail = {name: "Cocktail", position:4};
+  let comb = {name: "Comb", position:3};
+  let merge = {name: "Merge", position:5};
+  let quick = {name: "Quick", position:6};
+  let SORTS = [bubble, selection, insertion, merge, cocktail, comb, quick];
   let positions = [
-    [0,0],  [160,0],  [320,0],
-    [0,185],[160,185],[320,185],
+    [0,0],    [120,0],    [240,0],    [360,0],
+    [0,135],  [120,135],  [240,135],  [360,145],
   ];
   let initialarr = [], arrsize;
   let gui;
   let startBtn, randomizeBtn, stepBtn, ascBtn, descBtn;
   let speedSlid, skipSlid, sizeSlid;
-  let sizes = [5,7,10,12,15,18,20,25,30,35,40,45,50,60,70,80,90,100,120,150,180,200,250,300,250,300,400,500];
+  let sizes = [5,8,10,12,16,20,25,32,40,45,50,64,70,80,90,100,128,150,180,200,256,300,250,300,400,512];
   let sortSpeed = 5;
   let frame = 0;
   let skipframe = 0;
 
 
-  const makeinitialarr = function(type) {
+  let makeinitialarr = function(type) {
     switch (type) {
       case 'a': {
         initialarr = [];
@@ -79,7 +80,6 @@ var defaultSketch = function(p) {
 
   }
 
-
   let step = function(skip = 0) {
 
     let points = [];
@@ -118,7 +118,7 @@ var defaultSketch = function(p) {
       p.strokeWeight(1.5)
       p.ellipseMode(p.CENTER);
       if (item) p.fill(cG);
-      p.ellipse(pos[0]+20, pos[1]+15, 10, 10);
+      p.ellipse(pos[0]+15, pos[1]+10, 8, 8);
     });
     p.pop();
 
@@ -144,9 +144,9 @@ var defaultSketch = function(p) {
 
     randomizeBtn = p.createButton("Randomize", 340,415, 120,20);
     stepBtn = p.createButton(">", 420,385, 40,20);
-    startBtn = p.createToggle("START", 340,385, 70,20);
-    startBtn.labelOn  = "STOP";
-    startBtn.labelOff = "START";
+    startBtn = p.createToggle("Start", 340,385, 70,20);
+    startBtn.labelOn  = "Stop";
+    startBtn.labelOff = "Start";
     ascBtn = p.createButton("/", 340,445, 55,20)
     descBtn = p.createButton("\\", 405,445, 55,20)
 
@@ -165,18 +165,19 @@ var defaultSketch = function(p) {
       item.plot = new GPlot(p)
       item.plot
         .setTitleText(item.name)
-        .setPos(positions[index])
+        .setPos(positions[item.position])
         .setBgColor(cY)
         .setBoxBgColor(cW)
         .setBoxLineColor(cB)
         .setBoxLineWidth(2)
-        .setMar(5, 5, 30, 5)
-        .setDim(150, 150)
+        .setMar(5, 5, 20, 5)
+        .setDim(110, 110)
         .addLayer("markers", [new GPoint(0,0), new GPoint(0,0)])
         .addLayer("markers2", [new GPoint(0,0)]);
       item.plot.getTitle()
         .setFontColor(cB)
-        .setOffset(7);
+        .setFontSize(10)
+        .setOffset(4);
       item.plot.getXAxis()
         .setTickLength(false)
         .setDrawTickLabels(false)
